@@ -1,0 +1,60 @@
+'''
+wordSimilarity
+Andres Tenesaca
+'''
+
+import wordData
+import numpy as np
+
+def topSimilar(words,word):
+    '''
+    Finds the 5 most similar words to a given word including the given word.
+    :param words: A dictionary mapping words to dictionaries with years and counts.
+    :param word: a word, for which we are looking for similar words.
+    :return: A list of the top five words including the input word in the descending
+     order of similarity. If there are less than five words in the file, then return as
+     much words as you have. If there is no such a word in the words dictionary, return just one word, itself
+    '''
+    if word not in words:
+        return word
+
+    # create a dictionary that has the keys as the name of the word and the values will be the
+    # count at each year in a list
+    count_dict = {}
+    for key in words:
+        list_counts = list(words[key].values())
+        count_dict[key] = list_counts
+
+    similarity =[]
+    for i in words.keys():
+        if i == word: # skip the word in the dictionary
+            continue
+
+        # since numpy array requires a list we can use the list found at each value for each key (word)
+        w1 = np.array(count_dict[i])
+        w2 = np.array(count_dict[word])
+
+        w1_norm = np.linalg.norm(w1)
+        w2_norm = np.linalg.norm(w2)
+        if w1_norm == 0 or w2_norm == 0:
+            similarity.append((i,0))
+            continue
+        w1_norm = w1/w1_norm
+        w2_norm = w2/w2_norm
+        # add the word and similarity as a tuple that will be added into a list
+        similarity.append((i,np.dot(w1_norm, w2_norm)))
+
+    # sort the list based on the similarity from greatest to least
+    similarity.sort(key=lambda x: x[1], reverse=True)
+    result = [word]
+    # add the first 4 most similar words to the result that already has the original word as index 0
+    for similar_word in similarity[:4]:
+        result.append(similar_word[0])
+    return result
+
+if __name__ == '__main__':
+    fileName = input('Enter word file: ')
+    words = wordData.readWordFile(fileName)
+    word = input('Enter word: ')
+    result = topSimilar(words,word)
+    print('The most similar words are:\n'+str(result))
