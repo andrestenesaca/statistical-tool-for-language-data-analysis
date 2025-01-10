@@ -1,0 +1,51 @@
+'''
+letterFreq
+Andres Tenesaca
+'''
+
+import matplotlib.pyplot as plt
+import wordData
+
+def letterFreq(words):
+    '''
+    compute the relative frequency of English characters occurring in print
+    :param words: A dictionary mapping words to dictionaries with years and counts.
+    :return: A string containing the 26 lowercase characters in the English alphabet,
+     sorted in decreasing order of frequency of occurrence of each character.
+    '''
+    # create a dictionary with all the letters in the alphabet as the keys and the values will keep
+    # track of the amount of times they appear in the file then multiply it with the total # of
+    # occurrences in that year
+    alphabet={'a':0,'b':0,'c':0,'d':0,'e':0,'f':0,'g':0,'h':0,'i':0,'j':0,'k':0,\
+    'l':0,'m':0,'n':0,'o':0,'p':0,'q':0,'r':0,'s':0,'t':0,'u':0,'v':0,'w':0,'x':0,'y':0,'z':0}
+    for word in words.keys(): # loop through each word in the dictionary words
+        for letter in word: # loop through each letter in each word
+            if letter in alphabet:
+                alphabet[letter]+=1 * wordData.totalOccurrences(word, words)
+
+    list1=[]
+    for i in alphabet:
+        list1.append((i,alphabet[i])) # appends tuple (letter,count) into a list
+
+    letters =[] # hold only the letters
+    letter_count=[] # hold only the letter count
+
+    for letter in list1:
+        letters.append(letter[0]) # append every letter into a list to use as the x-axis
+
+    for num in list1:
+        letter_count.append(num[1]) # append every num into a list to use as y-axis
+
+    plt.bar(letters,letter_count,color='skyblue')
+    plt.show()
+
+    list1.sort(key = lambda x:x[1],reverse=True) # sorts the list of tuples based on the count of the letter in decreasing order
+    result =''
+    for i in list1:
+        result += str(i[0]) # adds each individual letter to an empty string in order to return the single string representing the letter frequency
+    return result
+
+if __name__ == '__main__':
+    fileName = input('Enter word file: ')
+    words = wordData.readWordFile(fileName)
+    print('Letters sorted by decreasing frequency:',letterFreq(words))
