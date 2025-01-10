@@ -1,0 +1,57 @@
+'''
+wordData
+Andres Tenesaca
+'''
+
+def readWordFile(fileName):
+    '''
+    creates a nested dictionary, outer dictionary keys are words and the value is a dictionary whose keys are years and values are
+    the count for that year
+    :param fileName: A string giving the name of a unigram data file.
+    :return: A dictionary mapping words to dictionaries (nested dictionary).
+    '''
+    fileName = f"data/{fileName}" # f-string will not require the user to type /data when typing the filename
+
+    years = set() # track the range of years
+    with open(fileName) as f:
+        for line in f:
+            one_line = line.strip().split(',')
+            if len(one_line) == 2:
+                years.add(one_line[0]) # add each year to the set
+    sorted_years = sorted(years) # sort the years in an increasing order
+
+    words = {} # will hold the nested dictionary
+    with open(fileName) as f:
+        for line in f:
+            one_line = line.strip().split(',')
+            if len(one_line) == 1: # creates a new word
+                key = one_line[0]
+                if key not in years: # makes sure to avoid duplicates
+                    second_dict = {}
+                    for year in sorted_years:
+                        second_dict[year] = 0 # sets the count for each year to zero
+                    words[key] = second_dict # add the year as a key and count as the value inside the other dictionary
+            elif len(one_line) == 2: # creates the year and count for the word
+                year,count = one_line[0],int(one_line[1])
+                words[key][year] = count # updates the count for the specific year
+    return words
+
+def totalOccurrences(word,words):
+    '''
+    calculates the total count of a word in the dictionary words
+    :param word: The word for which to calculate the count.
+    :param words:A dictionary mapping words to dictionaries with years and counts.
+    :return: The total number of times that a word has appeared in print
+    '''
+    acc = 0
+    for i in words[word].values(): # loop through the list of values of that particular key and add all the values
+        acc+=i
+    return acc
+
+if __name__ == '__main__':
+    fileName = input('Enter a word file: ')
+    words = readWordFile(fileName)
+    word = input('Enter word: ')
+    total = totalOccurrences(word,words)
+    print(words)
+    print('Total occurrences of airport: ', total)
