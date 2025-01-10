@@ -1,0 +1,62 @@
+'''
+trending
+Andres Tenesaca
+'''
+
+import wordData
+
+def trending(words,startYr,endYr):
+    '''
+    creates a list of the top 10 and bottom 10 trending words in words
+    :param words: A dictionary mapping words to dictionaries with years and counts.
+    :param startYr: An integer, the starting year for the computation of the trending words.
+    :param endYr: An integer, the ending year for the computation of the trending words.
+    :return: Alist containing a tuple (word, trend) entry for each word for
+    which qualifying data exists. The list is sorted in decreasing trend value.
+    '''
+    qualified_words = []
+    trending_words = []
+    for word in words:
+        name = word
+        # this conditional statement makes sure to check if the starting year
+        # and ending year exists in the nested dictionary
+        if str(startYr) in words[word] and str(endYr) in words[word]:
+            # this conditional statement makes sure that the count for that word for that year
+            # is greater than 1000 in order to be considered a trending word
+            if words[name][str(startYr)] >=1000 and words[name][str(endYr)] >=1000:
+                qualified_words.append(name)
+
+    for word in qualified_words:
+        trend = (words[word][str(endYr)]) / (words[word][str(startYr)]) #this calculates the trend
+        trending_words.append((word,trend)) # add word, trend as a tuple into a list to sort
+
+    trending_words.sort(key=lambda x: x[1],reverse=True) #sorts the trending words by there trend
+    top_10_words =[]
+    for i in trending_words[:10]: #make sure that we only add the first 10 words trending
+        top_10_words.append(i)
+
+    bottom_10_words =[]
+    for i in trending_words[-10:]: #makes sure that we only add the last top words trending
+        bottom_10_words.append(i)
+    bottom_10_words.sort(key=lambda x: x[1],reverse=True) #sorts the bottom 10 words in the order from least to greatest
+
+    result = top_10_words + bottom_10_words #combines the two lists
+
+    return result
+
+if __name__ == '__main__':
+    fileName = input("Enter word file: ")
+    startYr = input("Enter starting year: ")
+    endYr = input("Enter ending year: ")
+    words = wordData.readWordFile(fileName)
+    result = trending(words, startYr, endYr)
+    top = result[:10]
+    bottom = result[-10:]
+    bottom.sort(key=lambda x: x[1])
+    print('The top 10 trending words from '+str(startYr)+' to '+str(endYr)+' : ')
+    for word in top:
+        print(word[0])
+    print('')
+    print('The bottom 10 trending words from '+ str(startYr)+ ' to '+str(endYr)+ ' : ')
+    for word in bottom:
+        print(word[0])
