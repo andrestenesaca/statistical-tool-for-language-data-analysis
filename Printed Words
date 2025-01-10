@@ -1,0 +1,55 @@
+'''
+PrintedWords
+Andres Tenesaca
+'''
+
+import wordData
+import matplotlib.pyplot as plt
+from matplotlib.ticker import MaxNLocator
+
+def printedWords(words):
+    '''
+    create a list sorted in ascending order of year that holds a tuple (year, count)
+    :param words: A dictionary mapping words to dictionaries with years and counts
+    :return: A list containing tuples (year, count total words) for each year for which data exists.
+    The list must be sorted in ascending order of year.
+    '''
+    yearList = []
+    for year in words.values():
+        for j in year: # loop through each year for each word
+            yearList.append((j,year[j])) # add the year and the count for that year as a tuple into a list
+
+    yearList.sort(key=lambda x: x[0]) # sort the list based on the year
+    return yearList
+
+def wordsForYear(year,yearList):
+    '''
+    create a dictionary holds a key (year) and the value which is the total count for that year
+    :param year: an integer representing the year being queried.
+    :param yearList: a list of tuples (year, count total words), as defined in the previous
+    function. The list must be sorted in ascending order of year.
+    :return: An integer count representing the total number of printed words for that year.
+    If there is no entry in yearList for the requested year, the function returns 0.
+    '''
+    dict_yr_count ={} # make a dictionary the keys will be the year the value will be count for that year
+    year = str(year)
+    for i in yearList: # loop through the year list of tuples
+        if i[0] in dict_yr_count:
+            dict_yr_count[i[0]] += i[1] # if the key is already in dict then we add the count to the value in the dict
+        else:
+            dict_yr_count[i[0]] = i[1] # if the key is not in the dict then we add it along with the count for that year
+    plt.plot(dict_yr_count.keys(),dict_yr_count.values())
+    plt.gca().xaxis.set_major_locator(MaxNLocator(nbins=6)) # sets the x-axis labels to increase at increments of 20 from 1900
+    plt.show()
+    if year in dict_yr_count.keys(): # if the year exists in the dictionary of all years then we'll find the total count
+        return dict_yr_count[year]
+    else: # if the year does not exist then we return zero
+        return 0
+
+if __name__ == '__main__':
+    fileName = input('Enter word file: ')
+    year = int(input('Enter year: '))
+    words = wordData.readWordFile(fileName)
+    yearList = printedWords(words)
+    total = wordsForYear(year,yearList)
+    print('Total printed words in '+str(year)+' : '+ str(total))
